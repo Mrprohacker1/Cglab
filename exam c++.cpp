@@ -296,81 +296,72 @@ int main(int argc, char** argv) {
 
  
  
- 
- 
+#include <GL/glut.h>
+
+// Initial position and direction of the rectangle
+float posX = -0.9f;
+float direction = 0.01f;
+float ro = 2.0f;
+float r =0.0f;
+
+void init() {
+    glClearColor(1.0, 1.0, 1.0, 0.0); // Set background color to white
+    glMatrixMode(GL_PROJECTION);      // Set up a 2D orthographic projection
+    glLoadIdentity();
+    gluOrtho2D(-1.0, 1.0, -1.0, 1.0); // Define the coordinate system
+}
+
+void display() {
+    glClear(GL_COLOR_BUFFER_BIT);     // Clear the screen
+    glColor3f(0.0, 0.0, 0.0);         // Set rectangle color to black
+
+    glPushMatrix();
+    glTranslatef(posX, 0.0f, 0.0f);   // Move the rectangle along the x-axis
+    glRotatef(r,0,0,1);
+        glBegin(GL_QUADS);
+        glVertex2f(-0.1f, -0.1f);
+        glVertex2f(0.1f, -0.1f);
+        glVertex2f(0.1f, 0.1f);
+        glVertex2f(-0.1f, 0.1f);
+    glEnd();
+    glPopMatrix();
+
+    glutSwapBuffers(); // Swap buffers for smooth animation
+}
+
+void update(int value) {
+    // Update the position of the rectangle
+    posX += direction;
+    r += ro;
+    // Reverse direction if the rectangle hits the window boundaries
+    if (posX > 0.9f || posX < -0.9f) {
+        direction = -direction;
+    }
+    if(r>359.0 || r < -359.0)
+    {
+    r =-r;
+    }
+
+    glutPostRedisplay();      // Request a redisplay
+    glutTimerFunc(16, update, 0); // Call update again in 16 milliseconds (~60 FPS)
+}
+
+int main(int argc, char** argv) {
+    glutInit(&argc, argv);                              // Initialize GLUT
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);        // Enable double buffering and RGB color mode
+    glutInitWindowSize(800, 600);                       // Set window size
+    glutInitWindowPosition(100, 100);                   // Set window position
+    glutCreateWindow("Basic Animation with OpenGL");    // Create window with title
+
+    init();                                             // Call initialization routine
+
+    glutDisplayFunc(display);                           // Register display callback function
+    glutTimerFunc(0, update, 0);                        // Register timer callback function
+
+    glutMainLoop();                                     // Enter the GLUT event-processing loop
+    return 0;
+}
 
  
-#include <GL/glut.h> 
- 
-GLsizei winWidth = 500, winHeight = 500; 
-static GLfloat rotTheta = 0.0; 
- 
-void init(void) { 
-    glClearColor(1.0, 1.0, 1.0, 0.0); 
-} 
- 
-void displaySquare(void) { 
-    glClear(GL_COLOR_BUFFER_BIT); 
-    glLoadIdentity(); 
-    glTranslatef(150.0, 150.0, 0.0); 
-    glRotatef(rotTheta, 0.0, 0.0, 1.0); 
-    glColor3f(0.0, 0.0, 0.0); 
-    glBegin(GL_POLYGON); 
-    glVertex2f(-50.0, -50.0); 
-    glVertex2f(50.0, -50.0); 
-    glVertex2f(50.0, 50.0); 
-    glVertex2f(-50.0, 50.0); 
-    glEnd(); 
-    glutSwapBuffers(); 
-} 
- 
-void rotateSquare(void) { 
-    rotTheta += 3.0; 
-    if (rotTheta > 360.0) 
-        rotTheta -= 360.0; 
-    glutPostRedisplay(); 
-} 
-void keyboard(unsigned char key, int x, int y) { 
-    switch (key) { 
-        case 'r': 
-            glutIdleFunc(rotateSquare); 
-            break; 
-        case 's': 
-            glutIdleFunc(NULL); // Stop rotation 
-            break; 
-        case 'q': 
-            exit(0); // Quit program 
-            break; 
-        default: 
-            break; 
-    } 
-} 
-void winReshapeFcn(GLint newWidth, GLint newHeight) { 
-    glViewport(0, 0, newWidth, newHeight); 
-    glMatrixMode(GL_PROJECTION); 
-    glLoadIdentity(); 
-    gluOrtho2D(-250.0, 250.0, -250.0, 250.0); 
-    glMatrixMode(GL_MODELVIEW); 
-    glLoadIdentity(); 
-    glClear(GL_COLOR_BUFFER_BIT); 
-} 
- 
-int main(int argc, char** argv) { 
-    glutInit(&argc, argv); 
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB); 
-    glutInitWindowPosition(150, 150); 
-    glutInitWindowSize(winWidth, winHeight); 
-    glutCreateWindow("Simple Square Rotation"); 
- 
-    init(); 
-    glutDisplayFunc(displaySquare); 
-    glutReshapeFunc(winReshapeFcn); 
-    glutKeyboardFunc(keyboard); 
-    glutIdleFunc(rotateSquare); 
- 
-    glutMainLoop(); 
-    return 0; 
-} 
- 
- 
+
  
